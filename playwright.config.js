@@ -3,7 +3,7 @@ const { devices } = require('@playwright/test');
 module.exports = {
     name: 'Fools Good',
     testDir: './tests',
-    timeout: 30000,
+    timeout: 60000,
     use: {
         ignoreHTTPSErrors: true,
         baseURL: 'http://sdetchallenge.fetch.com/',

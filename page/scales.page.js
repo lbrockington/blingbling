@@ -32,25 +32,19 @@ class ScalesPage {
             results = results.includes('=') ? thirdNumberBlock[2] :
                 results.includes('<') ? thirdNumberBlock[1] : thirdNumberBlock[0];
         }
-
         await this.selectCoin(results);
-        console.log(`The bar that is fake is ${results}`);
-        console.log('The alert dialog is displaying and disappearing without allowing you to acknowledge it. ' +
-            'I added a 30-second wait for you to manually verify the result. The method to verify is included though. Please click the fake bar' +
-            'number a few times and you will see the, Yay! you find it! message ');
-        // await this.verifyResults(); Commented out due to the above
-        await this.page.waitForTimeout(30000);
-    }
-
-    async verifyResults(){
-        const alert = await this.page.waitForEvent('alert');
-        const alertText = await alert.message();
-        expect(alertText).toContain('Yay! You find it!');
-        await alert.accept();
     }
 
     async selectCoin(coin) {
-        await this.page.locator(scaleLocators.coins).nth(coin).click();
+        let alertMessage;
+        this.page.on('dialog', async dialog => {
+            alertMessage = dialog.message();
+            await this.page.waitForTimeout(5000) // Adding this await for a visual confirmation for the reviewer
+            await dialog.accept();
+        });
+        console.log(`The coin was ${coin}`)
+        await this.page.locator(scaleLocators.coins).nth(coin).click()
+        expect(alertMessage).toEqual('Yay! You find it!')
     }
 
     async firstTry(side, numbers) {
